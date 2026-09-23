@@ -1,0 +1,1 @@
+record_id,specimen_id,site_id,taxon,site,longitude,latitude,coordinate_uncertainty_km,date_type,age_14c_bp,error_14c_bp,cal_young_bp,cal_old_bp,calibration_reference,lab_code,material,quality_class,include,exclusion_reason,reference,notes

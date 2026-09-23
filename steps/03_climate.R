@@ -1,0 +1,27 @@
+source("R/common.R"); source("R/climate.R"); p<-load_project(); prev<-require_step(p,"02_calibration")
+d<-decision(p,"03_climate"); step<-"03_climate"
+stopifnot(all(c("xmin","xmax","ymin","ymax") %in% names(d$extent)),d$extent["xmin"]<d$extent["xmax"],d$extent["ymin"]<d$extent["ymax"],d$extent["ymin"]>=0,d$extent["ymax"]<=90,d$extent["xmin"]>=-180,d$extent["xmax"]<=180,d$average_years>=1,d$average_years==as.integer(d$average_years),d$land_threshold>0,d$land_threshold<=1,d$ice_threshold>0,d$ice_threshold<=1,d$extraction %in% c("focal_cell","mean_3x3"),length(d$projection_ages_ka)>1,all(is.finite(d$projection_ages_ka)),!anyDuplicated(d$projection_ages_ka))
+cat<-catalogue(p); table_out(p,step,"climate_catalogue",cat)
+ages<-read_output(p,"02_calibration","ages")
+inside<-with(ages,longitude>=d$extent["xmin"]&longitude<=d$extent["xmax"]&latitude>=d$extent["ymin"]&latitude<=d$extent["ymax"])
+if(!all(inside)) stop("Fossils outside study extent: ",paste(unique(ages$record_id[!inside]),collapse=", "),". Revise extent or document exclusions upstream.")
+rows<-vector("list",nrow(ages))
+for(i in seq_len(nrow(ages))) {
+  r<-read_climate(p,cat,ages$age_bp[i]/1000,d,c(ages$longitude[i],ages$latitude[i]))
+  r$cell_longitude<-r$longitude; r$cell_latitude<-r$latitude; r$longitude<-r$latitude<-NULL
+  rows[[i]]<-cbind(ages[i,],r)
+  if(i%%25==0) message("Fossil age extraction ",i,"/",nrow(ages))
+}
+all<-do.call(rbind,rows); table_out(p,step,"all_age_climates",all)
+keep<-all[all$state=="land",]; if(length(unique(keep$record_id))<8) stop("Too few usable fossils. Inspect extraction audit.")
+table_out(p,step,"failed_extractions",all[all$state!="land",])
+write_output(p,step,"age_climates",keep)
+means<-do.call(rbind,lapply(split(keep,keep$record_id),function(z) {r<-z[1,]; r[predictor_names]<-lapply(z[predictor_names],mean); r$age_bp<-mean(z$age_bp); r$age_ka<-mean(z$age_ka); r$n_age_rows<-nrow(z); r}))
+write_output(p,step,"means",means); table_out(p,step,"fossil_means",means)
+plot_out(p,step,"extraction_status",point_map(all,"state","Climate extraction audit"))
+projections<-lapply(d$projection_ages_ka,function(a) {message("Projection climate at ",a," ka");read_climate(p,cat,a,d)})
+grid<-do.call(rbind,projections); write_output(p,step,"grid",grid)
+counts<-as.data.frame(table(all$record_id,all$state)); names(counts)<-c("record_id","state","n_age_rows")
+table_out(p,step,"extraction_counts",counts)
+plot_out(p,step,"counts",ggplot(counts,aes(record_id,n_age_rows,fill=state))+geom_col()+theme(axis.text.x=element_text(angle=90,hjust=1))+labs(y="Age alternatives",x="Fossil"))
+complete_step(p,step,c(prev,decision_file(d)),d,c(paste(nrow(means),"fossils retained;",nrow(all)-nrow(keep),"age rows unavailable."),"No coastal relocation: a nominal ocean or ice cell is unavailable.","Fractions and monthly climatologies use the same rules for presences and projections.","NetCDF paths/catalogue saved; source archives are external read-only inputs."))

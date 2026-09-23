@@ -1,0 +1,12 @@
+.R-library/
+.Rhistory
+.RData
+outputs/
+examples/generated/*
+!examples/generated/fossils.csv
+config/local.R
+decisions/
+logs/
+*.tar.gz
+*.nc
+data/

@@ -1,0 +1,15 @@
+source("R/common.R"); source("R/models.R"); p<-load_project(); prev<-require_step(p,"05_design")
+d<-decision(p,"06_tuning"); step<-"06_tuning"; z<-read_output(p,"05_design","design")
+stopifnot(length(d$feature_classes)>0,all(d$feature_classes %in% c("l","lq","lqp","lqh","lqph")),all(d$regmult>0),d$omission_quantile>0,d$omission_quantile<.5)
+candidates<-expand.grid(features=d$feature_classes,regmult=d$regmult,stringsAsFactors=FALSE)
+rows<-lapply(seq_len(nrow(candidates)),function(i) {
+  c<-candidates[i,]; message("Candidate ",i,"/",nrow(candidates))
+  metrics<-validation("MaxEnt",z$presence,z$background,z$vars,c$features,c$regmult,d$omission_quantile)
+  data.frame(features=c$features,regmult=c$regmult,metrics,row.names=NULL,check.names=FALSE)
+}); metrics<-do.call(rbind,rows)
+table_out(p,step,"held_out_metrics",metrics)
+g<-ggplot(metrics,aes(factor(regmult),auc,colour=features,group=interaction(features,fold)))+
+  geom_line(alpha=.45)+geom_point()+labs(x="Regularization multiplier",y="Held-out presence-background AUC",colour="Features",title="Each line is one spatial fold")
+plot_out(p,step,"tuning",g)
+write_output(p,step,"tuning",list(settings=d,metrics=metrics))
+complete_step(p,step,c(prev,decision_file(d)),d,c("Compare omission, AUC and binned Boyce across folds, not just their mean.","These folds tune the model: reported scores are not an independent final test.","Prefer simpler models with similar performance. AUC depends on the chosen background; it does not measure extinction prediction."))

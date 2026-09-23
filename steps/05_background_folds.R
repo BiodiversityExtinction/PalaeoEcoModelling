@@ -1,0 +1,23 @@
+source("R/common.R"); source("R/models.R"); p<-load_project(); prev<-require_step(p,"04_variables"); invisible(require_step(p,"03_climate"))
+d<-decision(p,"05_design"); step<-"05_design"
+stopifnot(length(d$predictors)>=2,all(d$predictors %in% predictor_names),!anyDuplicated(d$predictors),d$background_n>=100,d$folds>=2,d$folds==as.integer(d$folds),d$block_km>0)
+x<-read_output(p,"03_climate","means"); grid<-read_output(p,"03_climate","grid")
+ages<-read_output(p,"03_climate","age_climates"); age_range<-range(ages$age_ka)
+bg<-sample_background(grid,d$background_n,age_range)
+spec<-list(block_km=d$block_km,ref_lat=mean(x$latitude)); x$block<-fold_id(x,spec); bg$block<-fold_id(bg,spec)
+blocks<-sample(unique(x$block)); if(length(blocks)<d$folds)stop("Too few occupied blocks; revise block_km/folds after inspecting geography.")
+counts<-table(x$block); blocks<-blocks[order(-counts[blocks])]; totals<-rep(0,d$folds); lookup<-setNames(integer(length(blocks)),blocks)
+for(b in blocks) {k<-which.min(totals); lookup[b]<-k; totals[k]<-totals[k]+length(unique(x$site_id[x$block==b]))}
+allblocks<-sort(unique(bg$block)); extra<-setdiff(allblocks,names(lookup)); lookup<-c(lookup,setNames(sample(rep(seq_len(d$folds),length.out=length(extra))),extra))
+x$fold<-unname(lookup[x$block]); bg$fold<-unname(lookup[bg$block])
+if(any(vapply(split(x$fold,x$site_id),function(z)length(unique(z))!=1,logical(1))))stop("Site leakage between folds.")
+table_out(p,step,"folds",x); table_out(p,step,"background",bg)
+# Deduplicate only within a fossil; normalization prevents more age rows implying more fossils.
+key<-paste(ages$record_id,apply(ages[d$predictors],1,paste,collapse="|"))
+unique_ages<-ages[!duplicated(key),]; unique_ages$weight<-1/as.numeric(table(unique_ages$record_id)[unique_ages$record_id])
+table_out(p,step,"unique_age_climates",unique_ages)
+write_output(p,step,"design",list(presence=x,background=bg,age_rows=unique_ages,vars=d$predictors,age_range=age_range,spec=spec,lookup=lookup))
+points<-unique(rbind(data.frame(bg[c("longitude","latitude")],fold=factor(bg$fold)),data.frame(x[c("longitude","latitude")],fold=factor(x$fold))))
+g<-point_map(points,"fold","Spatial blocks and random background")+geom_point(data=x,aes(longitude,latitude),shape=21,fill="white",colour="black",size=2)
+plot_out(p,step,"background_and_folds",g)
+complete_step(p,step,c(prev,decision_file(d),out(p,"03_climate","provenance.rds")),d,c("White points are fossil sites; coloured points are background cells.",paste(nrow(x),"fossils;",nrow(unique_ages),"unique age climates."),"Background times are restricted to projection slices inside fossil temporal support (nearest slice if none).", "Geographic blocks stay together. Disconnected blocks may share a fold; folds are not populations."))
