@@ -163,7 +163,9 @@ source data, not just whether the script completed.
 This is the first **decision checkpoint**. Decision checkpoints always follow the
 same pattern: run the step once, open the newly created file, review every value,
 write a meaningful `rationale`, change `reviewed=FALSE` to `reviewed=TRUE`, save
-the file, and rerun the same step. The initial stop is deliberate.
+the file, and **rerun the same numbered step before moving to the next step**.
+Editing the decision file does not execute the analysis or create its outputs.
+The initial stop is deliberate.
 
 **Run once:**
 
