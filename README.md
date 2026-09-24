@@ -190,7 +190,13 @@ rationale = "I chose IntCal20 for Northern Hemisphere terrestrial samples; ten a
 ```
 
 Keep those entries inside the existing `decision <- list(...)` and run the same
-command again.
+command again. Do not move to Step 3 until Step 2 prints `Completed
+02_calibration` and `outputs/demo/02_calibration/` exists:
+
+```bash
+Rscript "$PALAEO_PIPELINE/steps/02_calibrate.R" "$PALAEO_PIPELINE/config/demo.R"
+ls outputs/demo/02_calibration
+```
 
 **What happens after approval:** raw radiocarbon ages are calibrated with IntCal20.
 The central 95.4% calendar interval and median are recorded. Ten evenly spaced age
@@ -615,6 +621,21 @@ increase runtime and ensemble storage. No jobs are automatically submitted.
   later stages. Input hashes detect changed scripts, shared R code, upstream
   configs/decisions/fossils;
   external climate archive contents are not hashed. Never overwrite the archive.
+- `Inputs changed since outputs/...` is not a decision-review message. It means
+  that completed stage was made with different code or inputs. Rerun the named
+  stale stage, inspect it again, and then rerun each later stage in order. An
+  already reviewed decision file does not need another edit unless its scientific
+  choice changed. During active pipeline development, pulling a code update can
+  intentionally trigger this safeguard.
+- For example, if Step 2 reports that `01_fossils` changed, recover in this order:
+
+```bash
+Rscript "$PALAEO_PIPELINE/steps/01_fossils.R" "$PALAEO_PIPELINE/config/demo.R"
+Rscript "$PALAEO_PIPELINE/steps/02_calibrate.R" "$PALAEO_PIPELINE/config/demo.R"
+# Inspect outputs/demo/02_calibration, then and only then run Step 3.
+Rscript "$PALAEO_PIPELINE/steps/03_climate.R" "$PALAEO_PIPELINE/config/demo.R"
+```
+
 - For a focal-cell versus 3x3 comparison, create two project configs with different
   output and decision directories. Otherwise the second run replaces the first.
 - If a fold has too few independent localities, inspect `folds.csv`; discuss a
