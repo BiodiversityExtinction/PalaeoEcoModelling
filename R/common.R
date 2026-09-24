@@ -54,11 +54,11 @@ decision <- function(p, name) {
   if (!file.exists(f)) {
     template <- repo_file(if (p$synthetic) file.path("examples","demo_decisions") else "templates",paste0(name,".R"))
     file.copy(template,f)
-    stop("Decision template created: ",f,". Read its comments, edit it, explain your choice, then rerun this step.")
+    stop("Decision template created: ",f,"\nOpen it with: nano ",f,"\nRead its comments, edit it, add a rationale, set reviewed=TRUE, save, and rerun this step.")
   }
   e <- new.env(parent=baseenv()); sys.source(f,e); d <- e$decision
   if (!isTRUE(d$reviewed) || !is.character(d$rationale) || !nzchar(trimws(d$rationale)))
-    stop("Review ",f,"; add rationale and set reviewed=TRUE.")
+    stop("Review ",f,"; add a rationale and set reviewed=TRUE.\nOpen it with: nano ",f)
   attr(d,"file") <- normalizePath(f); d
 }
 decision_file <- function(d) attr(d,"file")

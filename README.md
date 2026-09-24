@@ -160,6 +160,11 @@ source data, not just whether the script completed.
 
 **Question:** when could each fossil actually have lived in calendar years?
 
+This is the first **decision checkpoint**. Decision checkpoints always follow the
+same pattern: run the step once, open the newly created file, review every value,
+write a meaningful `rationale`, change `reviewed=FALSE` to `reviewed=TRUE`, save
+the file, and rerun the same step. The initial stop is deliberate.
+
 **Run once:**
 
 ```bash
@@ -169,7 +174,13 @@ Rscript "$PALAEO_PIPELINE/steps/02_calibrate.R" "$PALAEO_PIPELINE/config/demo.R"
 **What happens on the first run:** the script creates
 `decisions/demo/02_calibration.R` and intentionally stops. This is expected, not
 an error. Open that file and decide which calibration settings to use. Read the
-comments and [parameter guide](docs/PARAMETERS.md), then edit, for example:
+comments and [parameter guide](docs/PARAMETERS.md). Open it with:
+
+```bash
+nano decisions/demo/02_calibration.R
+```
+
+Review `curve`, `age_points` and `boundary_policy`, then edit, for example:
 
 ```r
 reviewed = TRUE,
@@ -210,6 +221,13 @@ The first run creates `decisions/demo/03_climate.R` and stops. In that file you
 must define the geographic study domain, projection time points, temporal averaging
 window, focal-cell versus 3x3 extraction, and land/ice thresholds. Write a
 rationale, set `reviewed=TRUE`, and rerun the command.
+
+```bash
+nano decisions/demo/03_climate.R
+```
+
+Review `extent`, `projection_ages_ka`, `average_years`, `extraction`,
+`land_threshold` and `ice_threshold`. Save the file and rerun Step 3.
 
 **What happens after approval:** for every fossil age alternative, the script
 reads monthly temperature and total precipitation, averages the chosen number of
@@ -274,6 +292,13 @@ The first run creates `decisions/demo/05_design.R` and stops. Select the predict
 you justified in step 4, the total random-background sample size, approximate block
 width and number of folds. Add your rationale, set `reviewed=TRUE`, and rerun.
 
+```bash
+nano decisions/demo/05_design.R
+```
+
+Review `predictors`, `background_n`, `block_km` and `folds`. Save the file and
+rerun Step 5.
+
 **What happens after approval:** random background cells are sampled from ice-free
 land in the study domain at projection times supported by the fossils. They are
 available environments, not known absences. Fossil sites and background cells are
@@ -306,6 +331,13 @@ The first run creates `decisions/demo/06_tuning.R` and stops. Specify candidate
 feature classes, regularization multipliers and the omission quantile. Approve the
 decision and rerun.
 
+```bash
+nano decisions/demo/06_tuning.R
+```
+
+Review `feature_classes`, `regmult` and `omission_quantile`. Add your rationale,
+set `reviewed=TRUE`, save, and rerun Step 6.
+
 **What happens after approval:** using one mean climate vector per fossil, each
 candidate MaxEnt model is repeatedly fitted to all spatial folds except one and
 evaluated on the held-out fold. It reports AUC, omission, background-based TSS and
@@ -337,6 +369,13 @@ Rscript "$PALAEO_PIPELINE/steps/07_models.R" "$PALAEO_PIPELINE/config/demo.R"
 The first run creates `decisions/demo/07_models.R` and stops. Enter the MaxEnt
 feature class and regularization multiplier selected from step 6, add your
 rationale, approve it, and rerun.
+
+```bash
+nano decisions/demo/07_models.R
+```
+
+Set `features` and `regmult` to a combination actually tested in Step 6. Add your
+rationale, set `reviewed=TRUE`, save, and rerun Step 7.
 
 **What happens after approval:** the final baseline MaxEnt model and a multivariate
 Gaussian climate envelope are fitted to the same fossil means and background.
@@ -374,6 +413,13 @@ number of ensemble fits and whether to bootstrap whole localities. Approve and
 rerun. The demo's five replicates only test the code; they are not sufficient for
 a research uncertainty analysis.
 
+```bash
+nano decisions/demo/08_uncertainty.R
+```
+
+Review `replicates` and `bootstrap_sites`. Add your rationale, set
+`reviewed=TRUE`, save, and rerun Step 8.
+
 **What happens after approval:** each replicate selects one unique age-climate
 alternative per fossil, optionally resamples whole sites, redraws random background,
 refits both models and recalculates thresholds and suitable area. It does not put
@@ -403,6 +449,13 @@ Rscript "$PALAEO_PIPELINE/steps/09_regions_plots.R" "$PALAEO_PIPELINE/config/dem
 The first run creates `decisions/demo/09_regions.R` and stops. Choose whole-domain
 reporting, longitude/latitude bands, or custom polygons, and select map times.
 Approve the decision and rerun.
+
+```bash
+nano decisions/demo/09_regions.R
+```
+
+Review `mode`, `breaks`, `region_names`, `polygon_file`, `name_column` and
+`map_ages`. Add your rationale, set `reviewed=TRUE`, save, and rerun Step 9.
 
 **What happens after approval:** no model is refitted. Existing cell-level
 predictions are summarized for the whole model domain and your reporting regions.
