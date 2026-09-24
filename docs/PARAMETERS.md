@@ -44,6 +44,14 @@ alternatives intentionally do not use those probability weights.
 | `land_threshold` | Cell must have land fraction >= this threshold, usually 0.5, to count as land. It is a binary decision, not fractional coastal-area weighting. |
 | `ice_threshold` | Land with ice fraction >= this threshold, usually 0.5, is unsuitable. Other cells are treated as ice-free for extraction. Fractions below the threshold are not subtracted proportionally. |
 
+The archive covers the whole Northern Hemisphere, but the model domain should
+match the focal taxon and question. A Eurasian cave-hyena or giant-deer study can
+use a Eurasian rectangle; a dire-wolf, mastodon or Columbian-mammoth study should
+use North America; a whole-species woolly-mammoth analysis may require a Holarctic
+domain. This is an accessible/background region, not a known range polygon. In
+this workflow it is also the projection region, so changing it changes both the
+random background and mapped results. Decide before looking at predictions.
+
 At the original 0.5-degree resolution a 3x3 neighbourhood spans about 1.5 degrees
 each way, approximately `27,800 * cos(latitude)` square km. It is much larger
 than a precise fossil locality and its size varies with latitude. A focal cell

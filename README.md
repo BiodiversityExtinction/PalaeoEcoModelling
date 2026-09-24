@@ -31,6 +31,25 @@ The example rectangle is **not all Eurasia**. Change it for your study and label
 plots accurately. A species' exact historical distribution need not be known,
 but an implausibly broad background can distort the contrast used by MaxEnt.
 
+The Armstrong archive covers the entire Northern Hemisphere (`-180` to `179.5`
+degrees longitude and `0` to `89.5` degrees north), and MEGA14C contains both
+Eurasian and North American fossils. The study domain is therefore species- and
+question-specific, not always Eurasia. For example:
+
+- **Cave hyena or giant deer:** use a Eurasian domain that contains all accepted
+  fossils and the broader area plausibly accessible to the populations studied.
+- **Dire wolf, American mastodon or Columbian mammoth:** use a North American
+  domain rather than including inaccessible Eurasian environments as background.
+- **Woolly mammoth or another Holarctic species:** use a Holarctic domain if the
+  question concerns the whole species, or justify separate continental analyses
+  if the question concerns regional populations.
+
+These domains are not reconstructed species-range polygons. They define the area
+whose available climates are contrasted with fossil climates. In this workflow,
+the random-background and projection domains are the same rectangle. Expanding it
+to another continent can change MaxEnt fit and validation even when the fossil
+records do not change. Choose and document it before examining predictions.
+
 ## Requirements and setup
 
 Use R >= 4.3. Run terminal commands from this repository's root, not from `steps/`.
@@ -40,7 +59,7 @@ needed. `sf` is optional, only for custom polygon files.
 On this server the repository is currently at:
 
 ```bash
-cd /net/well/pool/projects2/Biodiversity_Extinction/Megaloceros/Climate/student_palaeo
+cd /home/people/micwe/Biodiversity_Extinction/PalaeoEcoModelling
 Rscript steps/00_setup.R
 ```
 
