@@ -9,5 +9,8 @@ if (length(args)) {
 }
 
 repo_root <- normalizePath(file.path(dirname(script_file), ".."), mustWork = TRUE)
-options(palaeo.repo_root = repo_root, palaeo.script_file = script_file)
-setwd(repo_root)
+options(
+  palaeo.repo_root = repo_root,
+  palaeo.script_file = script_file,
+  palaeo.launch_dir = normalizePath(getwd(), mustWork = TRUE)
+)

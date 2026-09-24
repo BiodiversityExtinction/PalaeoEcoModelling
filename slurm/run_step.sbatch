@@ -9,7 +9,7 @@ if [ "$#" -ne 2 ]; then
   printf 'Usage: sbatch slurm/run_step.sbatch steps/03_climate.R config/local.R\n' >&2
   exit 2
 fi
-cd "${SLURM_SUBMIT_DIR:?Submit from the student_palaeo repository root}"
+cd "${SLURM_SUBMIT_DIR:?Submit from the working directory that should receive outputs}"
 # If your cluster requires modules, load its R module here before submitting.
 export OMP_NUM_THREADS=1
 export OPENBLAS_NUM_THREADS=1

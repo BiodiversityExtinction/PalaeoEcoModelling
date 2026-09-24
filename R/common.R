@@ -1,4 +1,8 @@
-if (dir.exists(".R-library")) .libPaths(c(normalizePath(".R-library"), .libPaths()))
+repo_root <- getOption("palaeo.repo_root")
+if (is.null(repo_root)) stop("Repository bootstrap was not loaded.")
+repo_file <- function(...) file.path(repo_root, ...)
+local_library <- repo_file(".R-library")
+if (dir.exists(local_library)) .libPaths(c(local_library, .libPaths()))
 suppressPackageStartupMessages({library(ggplot2); library(patchwork)})
 options(stringsAsFactors = FALSE)
 
@@ -26,7 +30,7 @@ plot_out <- function(p, step, name, g, w=10, h=6) {
 theme_set(theme_bw(base_size=11, base_family="serif") + theme(legend.position="top",panel.grid.minor=element_blank()))
 complete_step <- function(p, step, inputs, settings, notes) {
   script <- getOption("palaeo.script_file", character())
-  code <- c(script,list.files("R",pattern="[.]R$",full.names=TRUE),"templates/fossils.csv")
+  code <- c(script,list.files(repo_file("R"),pattern="[.]R$",full.names=TRUE),repo_file("templates","fossils.csv"))
   inputs <- unique(c(p$config_file,code,inputs))
   inputs <- inputs[file.exists(inputs)]
   saveRDS(list(input_md5=tools::md5sum(inputs),settings=settings,date=Sys.time(),session=sessionInfo()),out(p,step,"provenance.rds"))
@@ -48,7 +52,7 @@ require_step <- function(p, step) {
 decision <- function(p, name) {
   f <- file.path(p$decisions_dir,paste0(name,".R"))
   if (!file.exists(f)) {
-    template <- file.path(if (p$synthetic) "examples/demo_decisions" else "templates",paste0(name,".R"))
+    template <- repo_file(if (p$synthetic) file.path("examples","demo_decisions") else "templates",paste0(name,".R"))
     file.copy(template,f)
     stop("Decision template created: ",f,". Read its comments, edit it, explain your choice, then rerun this step.")
   }

@@ -1,21 +1,23 @@
 # Developer/instructor test: explicitly approves SYNTHETIC decisions only.
 # Students should follow README.md instead of using this shortcut.
-source("R/common.R")
+script_file <- normalizePath(sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value=TRUE)[[1]]))
+source(file.path(dirname(script_file), "..", "R", "bootstrap.R"))
+source(file.path(getOption("palaeo.repo_root"),"R","common.R"))
 run<-function(script,config=NULL) {
   status<-system2(file.path(R.home("bin"),"Rscript"),c(script,config))
   if(status!=0)stop("Failed: ",script)
 }
-run("examples/make_demo.R")
+run(repo_file("examples","make_demo.R"))
 dir.create("decisions/demo",recursive=TRUE,showWarnings=FALSE)
-for(f in list.files("examples/demo_decisions",full.names=TRUE)) {
+for(f in list.files(repo_file("examples","demo_decisions"),full.names=TRUE)) {
   target<-file.path("decisions/demo",basename(f))
   if(file.exists(target))stop("This test refuses to overwrite existing demo decisions: ",target,". Use a fresh checkout or run individual steps.")
   lines<-readLines(f); lines<-gsub('reviewed=FALSE','reviewed=TRUE',lines,fixed=TRUE)
   lines<-gsub('rationale=""','rationale="Approved synthetic smoke-test settings; no scientific inference."',lines,fixed=TRUE)
   writeLines(lines,target)
 }
-for(f in list.files("steps",pattern="^[0-9].*\\.R$",full.names=TRUE)[-1])run(f,"config/demo.R")
-source("R/models.R"); source("R/regions.R")
+for(f in list.files(repo_file("steps"),pattern="^[0-9].*\\.R$",full.names=TRUE)[-1])run(f,repo_file("config","demo.R"))
+source(repo_file("R","models.R")); source(repo_file("R","regions.R"))
 z<-readRDS("outputs/demo/05_design/design.rds")
 stopifnot(all(vapply(split(z$presence$fold,z$presence$site_id),function(x)length(unique(x))==1,logical(1))))
 stopifnot(all(abs(tapply(z$age_rows$weight,z$age_rows$record_id,sum)-1)<1e-8))

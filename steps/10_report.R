@@ -1,6 +1,6 @@
 script_file <- normalizePath(sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value=TRUE)[[1]]))
 source(file.path(dirname(script_file), "..", "R", "bootstrap.R"))
-source("R/common.R"); p<-load_project(); prev<-require_step(p,"09_regions"); step<-"10_report"
+source(file.path(getOption("palaeo.repo_root"),"R","common.R")); p<-load_project(); prev<-require_step(p,"09_regions"); step<-"10_report"
 folders<-list.dirs(p$output_dir,recursive=FALSE,full.names=TRUE)
 lines<-c(paste0("# Analysis record: ",p$name),"",if(p$synthetic)"SYNTHETIC DEMONSTRATION ONLY." else "Draft analysis record: review before writing manuscript methods.","",paste("Generated:",Sys.time()),"","## Decisions")
 for(folder in folders) {

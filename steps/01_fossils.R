@@ -1,8 +1,8 @@
 script_file <- normalizePath(sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value=TRUE)[[1]]))
 source(file.path(dirname(script_file), "..", "R", "bootstrap.R"))
-source("R/common.R"); p <- load_project(); step <- "01_fossils"
+source(file.path(getOption("palaeo.repo_root"),"R","common.R")); p <- load_project(); step <- "01_fossils"
 x <- read.csv(p$fossil_file,check.names=FALSE,na.strings=c("","NA"))
-cols <- names(read.csv("templates/fossils.csv"))
+cols <- names(read.csv(repo_file("templates","fossils.csv")))
 if (!all(cols %in% names(x))) stop("Missing columns: ",paste(setdiff(cols,names(x)),collapse=", "))
 if (!nrow(x) || anyNA(x$record_id) || anyDuplicated(x$record_id)) stop("record_id must be nonempty and unique.")
 if (!is.logical(x$include) || anyNA(x$include)) stop("include must contain TRUE or FALSE for every row.")

@@ -11,13 +11,18 @@ R strings need quotes; decimal points are dots; ages are positive years before
 | Field | Meaning and what to set |
 |---|---|
 | `name` | Short analysis name printed on figures. Use species/run-specific names. |
-| `fossil_file` | Path to your standardized CSV. Relative paths start at repo root. |
+| `fossil_file` | Path to your standardized CSV. Relative paths start in the directory where you launch `Rscript`. |
 | `output_dir` | Where generated plots, tables and RDS files go. One directory per analysis. |
 | `decisions_dir` | Where progressively created, reviewed R decision files go. Do not share this between different studies. |
 | `climate_dirs` | Named directories `tas`, `pr`, `sftlf`, `sftgif`. They mean temperature, total precipitation, land fraction, ice fraction. File patterns are fixed by this archive adapter. |
 | `fraction_divisor` | Divide raw land/ice values by this number to get 0-1 fractions. Use 1 for our Armstrong files, even though units metadata says percent. For a genuinely 0-100 archive use 100 only after verification. |
 | `seed` | Reproducible random seed for each stage. Same inputs/settings/environment give the same draws. Change only for a documented sensitivity run. |
 | `synthetic` | TRUE for invented teaching data, FALSE for real fossils. Controls conspicuous plot labelling, not the underlying model. |
+
+All relative project paths use the launch directory. This lets many students run
+one shared installation while keeping their inputs, decisions and outputs in
+separate working directories. Absolute paths, such as the shared Armstrong
+archive paths, are used unchanged.
 
 ## 02: calibration
 

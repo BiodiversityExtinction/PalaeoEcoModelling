@@ -52,22 +52,25 @@ records do not change. Choose and document it before examining predictions.
 
 ## Requirements and setup
 
-Use R >= 4.3. Run terminal commands from this repository's root, not from `steps/`.
-The scripts use `maxnet` (MaxEnt in R), so Java and a separate MaxEnt jar are not
-needed. `sf` is optional, only for custom polygon files.
+Use R >= 4.3. The scripts use `maxnet` (MaxEnt in R), so Java and a separate
+MaxEnt jar are not needed. `sf` is optional, only for custom polygon files.
 
-On this server the repository is currently at:
+On this server, use the single shared repository but run commands from your own
+working directory. Set its location once when opening a new terminal:
 
 ```bash
-cd /home/people/micwe/Biodiversity_Extinction/PalaeoEcoModelling
-Rscript steps/00_setup.R
+export PALAEO_PIPELINE=/home/people/micwe/Biodiversity_Extinction/PalaeoEcoModelling
+mkdir -p "$PALAEO_PIPELINE/Mick"
+cd "$PALAEO_PIPELINE/Mick"
+Rscript "$PALAEO_PIPELINE/steps/00_setup.R"
 ```
 
-The setup script installs missing R packages into `.R-library/`. It needs internet
-access and may require system libraries/compiler support. On a cluster, install
-packages once on an allowed login/setup node, not in every compute job. Do not
+Replace `Mick` with the student's name or project. The setup script installs
+missing R packages once into the shared repository's `.R-library/`. It needs
+internet access and may require system libraries/compiler support. On a cluster,
+install packages on an allowed login/setup node, not in every compute job. Do not
 upload `.R-library/` or climate NetCDFs to GitHub. Versions used by each run are
-written to its stage summaries. The current repo is local, not published online.
+written to its stage summaries.
 
 ## Work through the tutorial one step at a time
 
@@ -78,11 +81,11 @@ workflow, but its apparent ecological patterns have no biological meaning.
 Do not paste all the commands into the terminal together. Run one step, inspect
 its outputs, record your reasoning, and only then run the next step.
 
-The commands below are written as if you are in the repository root. You may
-also invoke a step from a nested directory with paths such as
-`Rscript ../steps/01_fossils.R ../config/demo.R`; the workflow locates the
-repository automatically. Paths declared inside a configuration file, including
-output paths, are still interpreted relative to the repository root.
+The workflow never changes your working directory. Relative fossil, output and
+decision paths are interpreted from the directory where you launch `Rscript`.
+Shared scripts, templates, demo inputs and R packages are found automatically
+from `PALAEO_PIPELINE`. Consequently, each student gets `outputs/` and
+`decisions/` inside their own working directory without cloning the repository.
 
 In the tutorial, every filename listed under **Inspect** is inside that step's
 `outputs/demo/` folder. For a real project, replace `demo` with the output directory
@@ -96,7 +99,7 @@ available and installs missing packages into this project's `.R-library/`.
 **Run:**
 
 ```bash
-Rscript steps/00_setup.R
+Rscript "$PALAEO_PIPELINE/steps/00_setup.R"
 ```
 
 **What happens:** no fossils or climate are analysed. R prints the package
@@ -111,7 +114,7 @@ versions that will be used. If installation fails, resolve that before proceedin
 **Run:**
 
 ```bash
-Rscript examples/make_demo.R
+Rscript "$PALAEO_PIPELINE/examples/make_demo.R"
 ```
 
 **What happens:** R creates a standardized fossil CSV and small synthetic NetCDF
@@ -132,7 +135,7 @@ range (`cal_young_bp` to `cal_old_bp`).
 **Run:**
 
 ```bash
-Rscript steps/01_fossils.R config/demo.R
+Rscript "$PALAEO_PIPELINE/steps/01_fossils.R" "$PALAEO_PIPELINE/config/demo.R"
 ```
 
 **What happens:** the script checks required columns, coordinates, date fields,
@@ -160,7 +163,7 @@ source data, not just whether the script completed.
 **Run once:**
 
 ```bash
-Rscript steps/02_calibrate.R config/demo.R
+Rscript "$PALAEO_PIPELINE/steps/02_calibrate.R" "$PALAEO_PIPELINE/config/demo.R"
 ```
 
 **What happens on the first run:** the script creates
@@ -200,7 +203,7 @@ climates were available across the study domain through time?
 **Run once:**
 
 ```bash
-Rscript steps/03_climate.R config/demo.R
+Rscript "$PALAEO_PIPELINE/steps/03_climate.R" "$PALAEO_PIPELINE/config/demo.R"
 ```
 
 The first run creates `decisions/demo/03_climate.R` and stops. In that file you
@@ -235,7 +238,7 @@ ecological sense for this species?
 **Run:**
 
 ```bash
-Rscript steps/04_variables.R config/demo.R
+Rscript "$PALAEO_PIPELINE/steps/04_variables.R" "$PALAEO_PIPELINE/config/demo.R"
 ```
 
 **What happens:** no model is fitted and no variable is automatically selected.
@@ -264,7 +267,7 @@ and how will spatially close localities be kept out of opposite validation sets?
 **Run once:**
 
 ```bash
-Rscript steps/05_background_folds.R config/demo.R
+Rscript "$PALAEO_PIPELINE/steps/05_background_folds.R" "$PALAEO_PIPELINE/config/demo.R"
 ```
 
 The first run creates `decisions/demo/05_design.R` and stops. Select the predictors
@@ -296,7 +299,7 @@ the sampled localities too closely?
 **Run once:**
 
 ```bash
-Rscript steps/06_tune.R config/demo.R
+Rscript "$PALAEO_PIPELINE/steps/06_tune.R" "$PALAEO_PIPELINE/config/demo.R"
 ```
 
 The first run creates `decisions/demo/06_tuning.R` and stops. Specify candidate
@@ -328,7 +331,7 @@ does each modelling approach infer?
 **Run once:**
 
 ```bash
-Rscript steps/07_models.R config/demo.R
+Rscript "$PALAEO_PIPELINE/steps/07_models.R" "$PALAEO_PIPELINE/config/demo.R"
 ```
 
 The first run creates `decisions/demo/07_models.R` and stops. Enter the MaxEnt
@@ -363,7 +366,7 @@ within their uncertainty intervals or a somewhat different site sample were used
 **Run once:**
 
 ```bash
-Rscript steps/08_uncertainty.R config/demo.R
+Rscript "$PALAEO_PIPELINE/steps/08_uncertainty.R" "$PALAEO_PIPELINE/config/demo.R"
 ```
 
 The first run creates `decisions/demo/08_uncertainty.R` and stops. Choose the
@@ -394,7 +397,7 @@ geographic reporting regions?
 **Run once:**
 
 ```bash
-Rscript steps/09_regions_plots.R config/demo.R
+Rscript "$PALAEO_PIPELINE/steps/09_regions_plots.R" "$PALAEO_PIPELINE/config/demo.R"
 ```
 
 The first run creates `decisions/demo/09_regions.R` and stops. Choose whole-domain
@@ -427,7 +430,7 @@ limits of the result?
 **Run:**
 
 ```bash
-Rscript steps/10_report.R config/demo.R
+Rscript "$PALAEO_PIPELINE/steps/10_report.R" "$PALAEO_PIPELINE/config/demo.R"
 ```
 
 **What happens:** the script checks that all upstream outputs still match their
@@ -467,15 +470,17 @@ checkpoints. Do not infer climate causation from coincident lines alone.
 
 ## Your own species
 
-1. Compile `data/input/fossils.csv` using the exact headers in
-   `templates/fossils.csv`. Read [the data dictionary](docs/DATA_FORMAT.md).
+1. Compile `data/input/fossils.csv` in your working directory using the exact
+   headers in `$PALAEO_PIPELINE/templates/fossils.csv`. Read the shared
+   [data dictionary](docs/DATA_FORMAT.md).
    Filter MEGA14C and/or literature yourself, retaining provenance and exclusion
    reasons. There is no assumption that every record labelled `Crocuta` is a
    cave hyena. Resolve taxonomy and duplicate specimens before fitting.
-2. Copy `config/study_template.R` to `config/local.R`. Set the species name, fossil
+2. Copy the shared `config/study_template.R` to `config/local.R` in your working
+   directory. Set the species name, fossil
    path, output/decision paths and climate archive locations. These are logistics,
    not preselected scientific decisions. Different studies need separate paths.
-3. Run `Rscript steps/01_fossils.R config/local.R`. Inspect its map and audit.
+3. Run the shared Step 1 with your local `config/local.R`. Inspect its map and audit.
 4. Follow the same sequence as the tutorial, substituting `config/local.R` for
    `config/demo.R`. New study decisions will be requested as you reach each stage.
 5. Keep your decision files and results with your thesis. They are ignored by git
@@ -490,9 +495,10 @@ not silently invent uncertainty or move coastal points inland.
 The corresponding terminal start is:
 
 ```bash
-cp config/study_template.R config/local.R
+mkdir -p config data/input
+cp "$PALAEO_PIPELINE/config/study_template.R" config/local.R
 # Open config/local.R in your editor, then:
-Rscript steps/01_fossils.R config/local.R
+Rscript "$PALAEO_PIPELINE/steps/01_fossils.R" config/local.R
 ```
 
 ## Climate and fossil data
@@ -531,15 +537,15 @@ decision makes the batch job stop rather than choose for you.
 
 ```bash
 mkdir -p logs
-sbatch slurm/run_step.sbatch steps/03_climate.R config/local.R
+sbatch "$PALAEO_PIPELINE/slurm/run_step.sbatch" "$PALAEO_PIPELINE/steps/03_climate.R" config/local.R
 ```
 
 Wait for completion, read `logs/palaeo-step-JOBID.out`, inspect outputs, then submit
 the next expensive stage if needed:
 
 ```bash
-sbatch slurm/run_step.sbatch steps/06_tune.R config/local.R
-sbatch slurm/run_step.sbatch steps/08_uncertainty.R config/local.R
+sbatch "$PALAEO_PIPELINE/slurm/run_step.sbatch" "$PALAEO_PIPELINE/steps/06_tune.R" config/local.R
+sbatch "$PALAEO_PIPELINE/slurm/run_step.sbatch" "$PALAEO_PIPELINE/steps/08_uncertainty.R" config/local.R
 ```
 
 These are **examples at different checkpoints**, not jobs to launch together.

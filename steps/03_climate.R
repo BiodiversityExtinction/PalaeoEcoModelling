@@ -1,6 +1,6 @@
 script_file <- normalizePath(sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value=TRUE)[[1]]))
 source(file.path(dirname(script_file), "..", "R", "bootstrap.R"))
-source("R/common.R"); source("R/climate.R"); p<-load_project(); prev<-require_step(p,"02_calibration")
+source(file.path(getOption("palaeo.repo_root"),"R","common.R")); source(repo_file("R","climate.R")); p<-load_project(); prev<-require_step(p,"02_calibration")
 d<-decision(p,"03_climate"); step<-"03_climate"
 stopifnot(all(c("xmin","xmax","ymin","ymax") %in% names(d$extent)),d$extent["xmin"]<d$extent["xmax"],d$extent["ymin"]<d$extent["ymax"],d$extent["ymin"]>=0,d$extent["ymax"]<=90,d$extent["xmin"]>=-180,d$extent["xmax"]<=180,d$average_years>=1,d$average_years==as.integer(d$average_years),d$land_threshold>0,d$land_threshold<=1,d$ice_threshold>0,d$ice_threshold<=1,d$extraction %in% c("focal_cell","mean_3x3"),length(d$projection_ages_ka)>1,all(is.finite(d$projection_ages_ka)),!anyDuplicated(d$projection_ages_ka))
 cat<-catalogue(p); table_out(p,step,"climate_catalogue",cat)

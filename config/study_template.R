@@ -1,4 +1,5 @@
-# Copy to config/local.R, then edit the paths and name for YOUR species.
+# Copy into your working directory, then edit the paths and name for YOUR species.
+# Relative paths are interpreted from the directory where you launch Rscript.
 project <- list(
   name = "my_species",
   fossil_file = "data/input/fossils.csv",

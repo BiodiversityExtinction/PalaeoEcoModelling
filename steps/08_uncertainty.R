@@ -1,6 +1,6 @@
 script_file <- normalizePath(sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value=TRUE)[[1]]))
 source(file.path(dirname(script_file), "..", "R", "bootstrap.R"))
-source("R/common.R"); source("R/models.R"); p<-load_project(); prev<-require_step(p,"07_models")
+source(file.path(getOption("palaeo.repo_root"),"R","common.R")); source(repo_file("R","models.R")); p<-load_project(); prev<-require_step(p,"07_models")
 d<-decision(p,"08_uncertainty"); step<-"08_uncertainty"
 stopifnot(d$replicates>=2,d$replicates==as.integer(d$replicates),is.logical(d$bootstrap_sites),length(d$bootstrap_sites)==1)
 z<-read_output(p,"05_design","design"); baseline<-read_output(p,"07_models","models"); grid<-read_output(p,"03_climate","grid")
