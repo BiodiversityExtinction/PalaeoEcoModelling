@@ -1,3 +1,5 @@
+script_file <- normalizePath(sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value=TRUE)[[1]]))
+source(file.path(dirname(script_file), "..", "R", "bootstrap.R"))
 source("R/common.R"); source("R/models.R"); p<-load_project(); prev<-require_step(p,"06_tuning")
 d<-decision(p,"07_models"); step<-"07_models"; z<-read_output(p,"05_design","design")
 tuning<-read_output(p,"06_tuning","tuning"); q<-tuning$settings$omission_quantile

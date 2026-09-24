@@ -1,3 +1,5 @@
+script_file <- normalizePath(sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value=TRUE)[[1]]))
+source(file.path(dirname(script_file), "..", "R", "bootstrap.R"))
 source("R/common.R"); source("R/models.R"); p<-load_project(); prev<-require_step(p,"05_design")
 d<-decision(p,"06_tuning"); step<-"06_tuning"; z<-read_output(p,"05_design","design")
 stopifnot(length(d$feature_classes)>0,all(d$feature_classes %in% c("l","lq","lqp","lqh","lqph")),all(d$regmult>0),d$omission_quantile>0,d$omission_quantile<.5)

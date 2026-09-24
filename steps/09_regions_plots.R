@@ -1,3 +1,5 @@
+script_file <- normalizePath(sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value=TRUE)[[1]]))
+source(file.path(dirname(script_file), "..", "R", "bootstrap.R"))
 source("R/common.R"); source("R/models.R"); source("R/regions.R")
 p<-load_project(); prev<-require_step(p,"08_uncertainty"); d<-decision(p,"09_regions"); step<-"09_regions"
 grid<-read_output(p,"03_climate","grid"); regions<-assign_regions(grid,d)

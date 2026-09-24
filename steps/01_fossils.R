@@ -1,3 +1,5 @@
+script_file <- normalizePath(sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value=TRUE)[[1]]))
+source(file.path(dirname(script_file), "..", "R", "bootstrap.R"))
 source("R/common.R"); p <- load_project(); step <- "01_fossils"
 x <- read.csv(p$fossil_file,check.names=FALSE,na.strings=c("","NA"))
 cols <- names(read.csv("templates/fossils.csv"))

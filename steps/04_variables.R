@@ -1,3 +1,5 @@
+script_file <- normalizePath(sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value=TRUE)[[1]]))
+source(file.path(dirname(script_file), "..", "R", "bootstrap.R"))
 source("R/common.R"); p<-load_project(); prev<-require_step(p,"03_climate"); step<-"04_variables"
 x<-read_output(p,"03_climate","means")
 correlation<-cor(x[predictor_names],method="spearman")

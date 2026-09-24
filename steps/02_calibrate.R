@@ -1,3 +1,5 @@
+script_file <- normalizePath(sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value=TRUE)[[1]]))
+source(file.path(dirname(script_file), "..", "R", "bootstrap.R"))
 source("R/common.R"); p <- load_project(); prev <- require_step(p,"01_fossils")
 d <- decision(p,"02_calibration"); step <- "02_calibration"
 stopifnot(d$curve=="intcal20",d$age_points>=2,d$age_points==as.integer(d$age_points),d$boundary_policy %in% c("exclude","keep_flagged"))

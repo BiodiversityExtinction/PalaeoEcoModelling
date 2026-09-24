@@ -1,4 +1,6 @@
-# Run from the repository root: Rscript steps/00_setup.R
+# This bootstrap makes the setup command safe to run from any directory.
+script_file <- normalizePath(sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value=TRUE)[[1]]))
+source(file.path(dirname(script_file), "..", "R", "bootstrap.R"))
 dir.create(".R-library", showWarnings = FALSE)
 .libPaths(c(normalizePath(".R-library"), .libPaths()))
 packages <- c("ggplot2", "maps", "patchwork", "rcarbon", "ncdf4", "maxnet")

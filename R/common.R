@@ -3,13 +3,13 @@ suppressPackageStartupMessages({library(ggplot2); library(patchwork)})
 options(stringsAsFactors = FALSE)
 
 load_project <- function() {
-  args <- commandArgs(trailingOnly = TRUE)
-  if (!length(args)) stop("Supply a project file, e.g. config/demo.R")
-  e <- new.env(parent = baseenv()); sys.source(args[1], e)
+  config_file <- getOption("palaeo.config_file")
+  if (is.null(config_file)) stop("Supply a project file, e.g. config/demo.R")
+  e <- new.env(parent = baseenv()); sys.source(config_file, e)
   p <- e$project
   required <- c("name", "fossil_file", "output_dir", "decisions_dir", "climate_dirs", "seed", "synthetic", "fraction_divisor")
   if (!all(required %in% names(p))) stop("Missing project fields: ", paste(setdiff(required, names(p)), collapse=", "))
-  p$config_file <- normalizePath(args[1]); set.seed(p$seed)
+  p$config_file <- config_file; set.seed(p$seed)
   dir.create(p$output_dir, recursive=TRUE, showWarnings=FALSE)
   dir.create(p$decisions_dir, recursive=TRUE, showWarnings=FALSE)
   p
@@ -25,8 +25,7 @@ plot_out <- function(p, step, name, g, w=10, h=6) {
 }
 theme_set(theme_bw(base_size=11, base_family="serif") + theme(legend.position="top",panel.grid.minor=element_blank()))
 complete_step <- function(p, step, inputs, settings, notes) {
-  script_arg <- grep("^--file=",commandArgs(FALSE),value=TRUE)
-  script <- if(length(script_arg)) sub("^--file=","",script_arg[1]) else character()
+  script <- getOption("palaeo.script_file", character())
   code <- c(script,list.files("R",pattern="[.]R$",full.names=TRUE),"templates/fossils.csv")
   inputs <- unique(c(p$config_file,code,inputs))
   inputs <- inputs[file.exists(inputs)]

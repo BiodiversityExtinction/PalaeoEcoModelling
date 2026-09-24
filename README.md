@@ -78,6 +78,12 @@ workflow, but its apparent ecological patterns have no biological meaning.
 Do not paste all the commands into the terminal together. Run one step, inspect
 its outputs, record your reasoning, and only then run the next step.
 
+The commands below are written as if you are in the repository root. You may
+also invoke a step from a nested directory with paths such as
+`Rscript ../steps/01_fossils.R ../config/demo.R`; the workflow locates the
+repository automatically. Paths declared inside a configuration file, including
+output paths, are still interpreted relative to the repository root.
+
 In the tutorial, every filename listed under **Inspect** is inside that step's
 `outputs/demo/` folder. For a real project, replace `demo` with the output directory
 you set in `config/local.R`.

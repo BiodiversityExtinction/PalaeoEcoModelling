@@ -1,3 +1,5 @@
+script_file <- normalizePath(sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value=TRUE)[[1]]))
+source(file.path(dirname(script_file), "..", "R", "bootstrap.R"))
 source("R/common.R"); source("R/models.R"); p<-load_project(); prev<-require_step(p,"04_variables"); invisible(require_step(p,"03_climate"))
 d<-decision(p,"05_design"); step<-"05_design"
 stopifnot(length(d$predictors)>=2,all(d$predictors %in% predictor_names),!anyDuplicated(d$predictors),d$background_n>=100,d$folds>=2,d$folds==as.integer(d$folds),d$block_km>0)
